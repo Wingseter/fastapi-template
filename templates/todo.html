@@ -1,0 +1,32 @@
+{% extends "home.html" %}
+
+{% block title %}Todo List{% endblock %}
+
+{% block header %}Todo List{% endblock %}
+
+{% block content %}
+    <form id="todo-form">
+        <input type="text" id="todo-input" placeholder="Add a new task..." required>
+        <button type="submit">Add</button>
+    </form>
+    <ul id="todo-list"></ul>
+
+    <script>
+        document.getElementById('todo-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const taskText = document.getElementById('todo-input').value;
+            if (taskText) {
+                const li = document.createElement('li');
+                li.textContent = taskText;
+                document.getElementById('todo-list').appendChild(li);
+                document.getElementById('todo-input').value = '';
+            }
+        });
+
+        document.getElementById('todo-list').addEventListener('click', function(e) {
+            if (e.target.tagName === 'LI') {
+                e.target.classList.toggle('completed');
+            }
+        });
+    </script>
+{% endblock %}
