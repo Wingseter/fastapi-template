@@ -10,6 +10,7 @@ from routes.events import event_router
 
 import uvicorn
 
+
 app = FastAPI()
 settings = Settings()
 
