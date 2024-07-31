@@ -1,4 +1,4 @@
-from sqlmodel import JSON, SQLModel, Field, Column
+from baenie import Document
 from typing import Optional, List
 
 class Event(SQLModel, table=True):
@@ -6,11 +6,10 @@ class Event(SQLModel, table=True):
     title: str
     image: str
     description: str
-    tags: List[str] = Field(sa_column = Column(JSON))
+    tags: List[str]
     location: str
 
     class Config:
-        arbitary_types_allowed = True
         scheme_extra = {
             "example" : {
                 "title" : "FastAPI",
@@ -20,6 +19,8 @@ class Event(SQLModel, table=True):
                 "location" : "Google Meet" 
             }
         }
+    class Settings:
+        name = "events"
 
 class EventUpdate(SQLModel):
     title: Optional[str]
