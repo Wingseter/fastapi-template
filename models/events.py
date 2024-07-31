@@ -2,6 +2,7 @@ from baenie import Document
 from typing import Optional, List
 
 class Event(SQLModel, table=True):
+    creator: Optional[str]
     id: int = Field(default=None, primary_key=True)
     title: str
     image: str

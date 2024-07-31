@@ -5,6 +5,8 @@ from models.events import Event, EventUpdate
 from database.connection import Database
 from beanie import PydanticObjectId
 
+from auth.authenticate import authenticate
+
 event_router = APIRouter(
     tags=["Events"]
 )
@@ -29,7 +31,8 @@ async def retrieve_event(id: PydanticObjectId) -> Event:
 
 @event_router.post("/new")
 async def create_event(new_event: Event, 
-                       session=Depends(get_session)) -> dict:
+                       user: str = Depends(authenticate)) -> dict:
+    body.creator = user
     await event_database.save(body)
     
     return {
@@ -38,11 +41,15 @@ async def create_event(new_event: Event,
 
 @event_router.delete("{id}")
 async def delete_event(id: PydanticObjectId) ->dict:
-    event = await event_database.delete(id)
-    if not event:
+    event = await event_database.get(id)
+    if event.creator != user:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND,
             detail="Event with supplied ID does not exist"
+
+        )
+    if not event:
+        raise HTTPException(
         )
     return {
         "message" : "Event deleted successfully"
@@ -55,13 +62,11 @@ async def delete_all_events() -> dict:
         "message" : "Event deleted successfully"
     }
 
-@event_router.put("/edit/{id}", response_model = Event)
-async def update_event(id:int, new_data:EventUpdate, session=Depends(get_session)) ->Event:
-    updated_event = await event_database.update(id, body)
-
-    if not update_event:
+@event_router.put("/{id}", response_model = Event)
+async def update_event(id: PydanticObjectId, body: EventUpdate, user : str = Depends(authenticate)) -> Event:
+    event = await event_database.get(id)
+    id event.creator != user:
         raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND,
-            detail="Event with supplied ID does not exist"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Operation not allowed"
         )
-    return updated_event
