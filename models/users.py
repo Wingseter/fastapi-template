@@ -20,16 +20,6 @@ class User(BaseModel):
             }
         }
 
-class UserSignIn(BaseModel):
-    email: EmailStr
-    password: str
-
-    class Config:
-        scheme_extra = {
-            "example": {
-                "email": "email@gmail.com",
-                "password": "strong",
-                "events" : [],
-            }
-        }
-
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str

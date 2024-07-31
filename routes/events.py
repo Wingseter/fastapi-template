@@ -5,6 +5,8 @@ from models.events import Event, EventUpdate
 from database.connection import Database
 from beanie import PydanticObjectId
 
+from auth.authenticate import authenticate
+
 event_router = APIRouter(
     tags=["Events"]
 )
@@ -29,7 +31,7 @@ async def retrieve_event(id: PydanticObjectId) -> Event:
 
 @event_router.post("/new")
 async def create_event(new_event: Event, 
-                       session=Depends(get_session)) -> dict:
+                       user: str = Depends(authenticate)) -> dict:
     await event_database.save(body)
     
     return {
@@ -55,8 +57,8 @@ async def delete_all_events() -> dict:
         "message" : "Event deleted successfully"
     }
 
-@event_router.put("/edit/{id}", response_model = Event)
-async def update_event(id:int, new_data:EventUpdate, session=Depends(get_session)) ->Event:
+@event_router.put("/{id}", response_model = Event)
+async def update_event(id: PydanticObjectId, body: EventUpdate, user : str = Depends(authenticate)) ->dict:
     updated_event = await event_database.update(id, body)
 
     if not update_event:

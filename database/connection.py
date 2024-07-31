@@ -50,6 +50,7 @@ class Database:
         return
 
 class Settings(BaseSettings):
+    SECURET_KEY: Optional[str] = None
     DATABASE_URL : Optional[str] = None
 
     async def initialize_database(self):
